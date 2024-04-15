@@ -32,12 +32,37 @@ export class CountryResolver {
     }
   }
 
+  @Query(() => [Country])
+  async getCountriesByContinent(
+    @Arg("continentCode") continentCode: string
+  ): Promise<Country[]> {
+    try {
+      const result = await Country.find({
+        where: {
+          continentCode: continentCode,
+        },
+      });
+
+      return result;
+    } catch (err) {
+      console.error("Error", err);
+      throw new Error(
+        "An error occurred while fetching countries by continent"
+      );
+    }
+  }
+
   @Mutation(() => Country)
   async createCountry(
     @Arg("countryData") countryData: CountryInput
   ): Promise<Country> {
-    const { name, code, emoji } = countryData;
-    const country = await Country.create({ name, code, emoji }).save();
+    const { name, code, emoji, continentCode } = countryData;
+    const country = await Country.create({
+      name,
+      code,
+      emoji,
+      continentCode,
+    }).save();
     return country;
   }
 }
